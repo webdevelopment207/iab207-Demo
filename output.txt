@@ -1,0 +1,14 @@
+webdevelopment207 (12):
+      Initial commit
+      Add code
+      revert broken code
+      add back error pages
+      add test comment
+      Add address + contact collcetion, modify db, fix form
+      add population script + updates to register (STILL BROKEN)
+      remove unessecaru register.py + fix up registration in views.py
+      add profile updates to show new address + phone number
+      Add myself as a user
+      add missing import
+      update readme + merge dropdb -> createdb
+
