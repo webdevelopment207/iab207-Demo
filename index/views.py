@@ -174,21 +174,21 @@ def create_event():
     return render_template('create_event.html')
 
 # Error handling routes
-@main_bp.route('/404')
-def page_not_found():
+# Error handling routes
+@main_bp.app_errorhandler(404)
+def not_found_error(error):
     return render_template('error.html', error_code=404), 404
 
-@main_bp.route('/500')
-def server_error():
-    return render_template('error.html', error_code=500), 500
-
-@main_bp.errorhandler(404)
-def not_found(error):
-    return render_template('error.html', error_code=404), 404
-
-@main_bp.errorhandler(500)
+@main_bp.app_errorhandler(500)
 def internal_error(error):
+    db.session.rollback()  # Roll back any failed database sessions
     return render_template('error.html', error_code=500), 500
+
+# Optional: Generic error handler for other error codes
+@main_bp.app_errorhandler(Exception)
+def handle_error(error):
+    error_code = getattr(error, 'code', 500)  # Default to 500 if code not found
+    return render_template('error.html', error_code=error_code), error_code
 
 @main_bp.route('/tickets/<int:event_id>', methods=['GET', 'POST'])
 def tickets(event_id):

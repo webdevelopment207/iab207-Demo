@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block title %}Error {{ error_code }} - RealTickets{% endblock %}
+{% block content %}
+
+<div class="container min-vh-100 d-flex align-items-center justify-content-center">
+    <div class="text-center">
+        <!-- Error Code Display -->
+        <h1 class="display-1 fw-bold text-danger">{{ error_code }}</h1>
+        
+        <!-- Custom Error Messages -->
+        {% if error_code == 404 %}
+            <h2 class="fs-3">Page Not Found</h2>
+            <p class="lead">We couldn't find the page you're looking for.</p>
+        {% elif error_code == 500 %}
+            <h2 class="fs-3">Internal Server Error</h2>
+            <p class="lead">Something went wrong on our end. Please try again later.</p>
+        {% else %}
+            <h2 class="fs-3">An Error Occurred</h2>
+            <p class="lead">We apologize for the inconvenience.</p>
+        {% endif %}
+        
+        <!-- Navigation Buttons -->
+        <div class="mt-4">
+            <button onclick="history.back()" class="btn btn-dark me-2">
+                <i class="fas fa-arrow-left"></i> Go Back
+            </button>
+            <a href="{{ url_for('main.home') }}" class="btn btn-outline-dark">
+                <i class="fas fa-home"></i> Return Home
+            </a>
+        </div>
+        
+        <!-- Additional Help Section -->
+        <div class="mt-5">
+            <p class="text-muted">
+                If you continue to experience issues, please contact our support team.
+                <br>Error Reference: RT-{{ error_code }}-{{ range(1000, 9999) | random }}
+            </p>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Custom styles for the error page */
+    .display-1 {
+        font-size: 8rem;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+    }
+    
+    .btn {
+        transition: all 0.3s ease;
+        padding: 0.5rem 1.5rem;
+    }
+    
+    .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+    
+    /* Animation for the error code */
+    @keyframes errorShake {
+        0% { transform: translateX(0); }
+        25% { transform: translateX(-5px); }
+        75% { transform: translateX(5px); }
+        100% { transform: translateX(0); }
+    }
+    
+    .display-1:hover {
+        animation: errorShake 0.5s ease-in-out;
+        cursor: default;
+    }
+</style>
+{% endblock %}
