@@ -22,6 +22,7 @@ if not os.path.exists(UPLOAD_FOLDER):
     os.makedirs(UPLOAD_FOLDER)
 
 # Registration route
+# views.py
 @main_bp.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
@@ -31,6 +32,9 @@ def register():
         email = request.form['email']
         username = request.form['username']
         password = request.form['password']
+        # Add new fields
+        contact_number = request.form['contact_number']
+        street_address = request.form['street_address']
 
         # Check if the username already exists
         existing_user = User.query.filter_by(username=username).first()
@@ -40,7 +44,16 @@ def register():
 
         # Hash the password and save the new user
         hashed_password = generate_password_hash(password, method='pbkdf2:sha256')
-        new_user = User(first_name=first_name, last_name=last_name, dob=dob, email=email, username=username, password=hashed_password)
+        new_user = User(
+            first_name=first_name,
+            last_name=last_name,
+            dob=dob,
+            email=email,
+            username=username,
+            password=hashed_password,
+            contact_number=contact_number,
+            street_address=street_address
+        )
 
         # Add the new user to the database
         db.session.add(new_user)
