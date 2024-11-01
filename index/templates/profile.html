@@ -1,33 +1,101 @@
 {% extends "base.html" %}
-
 {% block title %}Profile{% endblock %}
-
 {% block content %}
-<div class="container">
-    <h2 class="mb-4">User Profile</h2>
-    <form method="POST" action="{{ url_for('main.profile') }}">
-        <div class="mb-3">
-            <label for="username" class="form-label">Username</label>
-            <input type="text" class="form-control" id="username" name="username" value="{{ current_user.username }}"
-                required>
-        </div>
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-8">
+            <div class="card bg-dark text-white">
+                <div class="card-body">
+                    <h2 class="card-title text-center mb-4">User Profile</h2>
+                    
+                    <form method="POST" action="{{ url_for('main.profile') }}" enctype="multipart/form-data">
+                        <!-- Personal Information Section -->
+                        <h5 class="mb-3 text-success">Personal Information</h5>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="first_name" class="form-label">First Name</label>
+                                <input type="text" class="form-control bg-dark text-white" id="first_name" 
+                                       name="first_name" value="{{ current_user.first_name }}" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="last_name" class="form-label">Last Name</label>
+                                <input type="text" class="form-control bg-dark text-white" id="last_name" 
+                                       name="last_name" value="{{ current_user.last_name }}" required>
+                            </div>
+                        </div>
 
-        <div class="mb-3">
-            <label for="email" class="form-label">Email</label>
-            <input type="email" class="form-control" id="email" name="email" value="{{ current_user.email }}" required>
-        </div>
+                        <!-- Contact Information Section -->
+                        <h5 class="mb-3 mt-4 text-success">Contact Information</h5>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="username" class="form-label">Username</label>
+                                <input type="text" class="form-control bg-dark text-white" id="username" 
+                                       name="username" value="{{ current_user.username }}" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="email" class="form-label">Email</label>
+                                <input type="email" class="form-control bg-dark text-white" id="email" 
+                                       name="email" value="{{ current_user.email }}" required>
+                            </div>
+                        </div>
 
-        <div class="mb-3">
-            <label for="bio" class="form-label">Bio</label>
-            <textarea class="form-control" id="bio" name="bio" rows="3">{{ current_user.bio }}</textarea>
-        </div>
+                        <div class="mb-3">
+                            <label for="contact_number" class="form-label">Contact Number</label>
+                            <input type="tel" class="form-control bg-dark text-white" id="contact_number" 
+                                   name="contact_number" value="{{ current_user.contact_number }}" required>
+                        </div>
 
-        <div class="mb-3">
-            <label for="profile_picture" class="form-label">Profile Picture</label>
-            <input type="file" class="form-control" id="profile_picture" name="profile_picture">
-            <small class="form-text text-muted" style="color: white !important;">Upload a profile picture (optional).</small>
-        </div>
-        <button type="submit" class="btn btn-primary">Update Profile</button>
+                        <div class="mb-3">
+                            <label for="street_address" class="form-label">Street Address</label>
+                            <textarea class="form-control bg-dark text-white" id="street_address" 
+                                    name="street_address" rows="2" required>{{ current_user.street_address }}</textarea>
+                        </div>
 
+                        <!-- Additional Information Section -->
+                        <h5 class="mb-3 mt-4 text-success">Additional Information</h5>
+                        <div class="mb-3">
+                            <label for="bio" class="form-label">Bio</label>
+                            <textarea class="form-control bg-dark text-white" id="bio" 
+                                    name="bio" rows="3">{{ current_user.bio }}</textarea>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="profile_picture" class="form-label">Profile Picture</label>
+                            <input type="file" class="form-control bg-dark text-white" id="profile_picture" 
+                                   name="profile_picture" accept="image/*">
+                            <small class="form-text text-white-50">Upload a profile picture (optional).</small>
+                        </div>
+
+                        <!-- Form Actions -->
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-success">Update Profile</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
-        {% endblock %}
+</div>
+
+<style>
+    .form-control {
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .form-control:focus {
+        background-color: #2a2a2a;
+        border-color: #198754;
+        box-shadow: 0 0 0 0.25rem rgba(25, 135, 84, 0.25);
+        color: white;
+    }
+    .card {
+        border: none;
+        border-radius: 15px;
+    }
+    .btn-success {
+        padding: 10px 20px;
+    }
+    .form-text {
+        font-size: 0.875rem;
+    }
+</style>
+{% endblock %}

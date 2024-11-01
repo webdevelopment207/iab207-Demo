@@ -267,39 +267,72 @@ def booking_history():
 @login_required
 def profile():
     if request.method == 'POST':
-        # Logic to update user profile
-        username = request.form['username']
-        email = request.form['email']
-        bio = request.form['bio']
-        
-        # Update the current user's information
-        current_user.username = username
-        current_user.email = email
-        current_user.bio = bio
-        
-        # Commit changes to the database
-        db.session.commit()
-        flash('Profile updated successfully!', 'success')
-        return redirect(url_for('main.profile'))
+        try:
+            # Get all form data
+            username = request.form.get('username')
+            email = request.form.get('email')
+            first_name = request.form.get('first_name')
+            last_name = request.form.get('last_name')
+            contact_number = request.form.get('contact_number')
+            street_address = request.form.get('street_address')
+            bio = request.form.get('bio')
+
+            # Check if username is being changed and if it's already taken
+            if username != current_user.username:
+                existing_user = User.query.filter_by(username=username).first()
+                if existing_user:
+                    flash('Username already taken!', 'danger')
+                    return redirect(url_for('main.profile'))
+
+            # Check if email is being changed and if it's already taken
+            if email != current_user.email:
+                existing_email = User.query.filter_by(email=email).first()
+                if existing_email:
+                    flash('Email already registered!', 'danger')
+                    return redirect(url_for('main.profile'))
+
+            # Update all user information
+            current_user.username = username
+            current_user.email = email
+            current_user.first_name = first_name
+            current_user.last_name = last_name
+            current_user.contact_number = contact_number
+            current_user.street_address = street_address
+            current_user.bio = bio
+
+            # Handle profile picture if provided
+            if 'profile_picture' in request.files:
+                file = request.files['profile_picture']
+                if file and file.filename:
+                    # Ensure filename is secure
+                    filename = secure_filename(file.filename)
+                    if filename:
+                        # Check file extension
+                        if not filename.lower().endswith(('.png', '.jpg', '.jpeg', '.gif')):
+                            flash('Invalid file type. Please upload an image.', 'danger')
+                            return redirect(url_for('main.profile'))
+                        
+                        # Save the file
+                        try:
+                            file_path = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
+                            file.save(file_path)
+                            current_user.profile_picture = filename
+                        except Exception as e:
+                            flash('Error uploading file.', 'danger')
+                            print(f"File upload error: {e}")
+
+            # Save changes to database
+            db.session.commit()
+            flash('Profile updated successfully!', 'success')
+            return redirect(url_for('main.profile'))
+
+        except Exception as e:
+            db.session.rollback()
+            print(f"Profile update error: {e}")
+            flash('An error occurred while updating your profile.', 'danger')
+            return redirect(url_for('main.profile'))
 
     return render_template('profile.html')
-
-@main_bp.route('/profile/update', methods=['POST'])
-@login_required
-def update_profile():
-    username = request.form['username']
-    email = request.form['email']
-    bio = request.form['bio']
-
-    # Update the current user's information
-    current_user.username = username
-    current_user.email = email
-    current_user.bio = bio
-
-    # Commit changes to the database
-    db.session.commit()
-    flash('Profile updated successfully!', 'success')
-    return redirect(url_for('main.profile'))
 
 
 @main_bp.route('/event/<int:event_id>/update_status', methods=['POST'])
