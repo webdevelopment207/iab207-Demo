@@ -5,6 +5,7 @@ from index import db  # Import the db instance from your app file
 from index.models import User, Comment, Event, Ticket  # Import models in one line for clarity
 from flask_login import logout_user, login_required, current_user, login_user
 from datetime import datetime  # Import datetime for date handling
+from werkzeug.utils import secure_filename
 
 # Define the Blueprint
 main_bp = Blueprint('main', __name__)
