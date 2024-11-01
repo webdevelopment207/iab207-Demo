@@ -1,4 +1,4 @@
-webdevelopment207 (12):
+webdevelopment207 (14):
       Initial commit
       Add code
       revert broken code
@@ -11,4 +11,6 @@ webdevelopment207 (12):
       Add myself as a user
       add missing import
       update readme + merge dropdb -> createdb
+      add the gitlog
+      Update readme
 
