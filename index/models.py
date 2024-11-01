@@ -1,7 +1,7 @@
 from flask_login import UserMixin  # Import UserMixin for Flask-Login
 from index import db
 from datetime import datetime
-
+from werkzeug.security import generate_password_hash
 
 class User(UserMixin, db.Model):  # Inherit from UserMixin
     id = db.Column(db.Integer, primary_key=True)
@@ -15,7 +15,7 @@ class User(UserMixin, db.Model):  # Inherit from UserMixin
     created_at = db.Column(db.DateTime, default=datetime.utcnow)  # Track creation time
     contact_number = db.Column(db.String(20), nullable=False)
     street_address = db.Column(db.String(200), nullable=False)
-    
+
     def __repr__(self):
         return f'<User {self.username}>'
 

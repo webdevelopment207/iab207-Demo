@@ -1,7 +1,6 @@
 import sqlite3
 from flask import Flask, render_template, request, redirect, url_for, flash, session
 from werkzeug.security import generate_password_hash, check_password_hash
-
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'  # Replace with a more secure secret key
 
@@ -21,46 +20,79 @@ def init_db():
     conn.commit()
     conn.close()
 
-# Registration template
-@main_bp.route('/register', methods=['GET', 'POST'])
+# Route for the registration page
+@app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
+        # Get form data
         first_name = request.form['first_name']
         last_name = request.form['last_name']
         dob = request.form['dob']
         email = request.form['email']
         username = request.form['username']
         password = request.form['password']
-        # Add new fields
         contact_number = request.form['contact_number']
         street_address = request.form['street_address']
 
-        # Check if the username already exists
-        existing_user = User.query.filter_by(username=username).first()
-        if existing_user:
-            flash('Username already exists! Please choose a different username.', 'danger')
+        # Create database connection
+        conn = sqlite3.connect('users.db')
+        c = conn.cursor()
+
+        # Create users table if it doesn't exist
+        c.execute('''CREATE TABLE IF NOT EXISTS users (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            first_name TEXT NOT NULL,
+            last_name TEXT NOT NULL,
+            dob TEXT NOT NULL,
+            email TEXT NOT NULL UNIQUE,
+            username TEXT NOT NULL UNIQUE,
+            password TEXT NOT NULL,
+            contact_number TEXT NOT NULL,
+            street_address TEXT NOT NULL
+        )''')
+
+        try:
+            # Check if username already exists
+            c.execute('SELECT username FROM users WHERE username = ?', (username,))
+            if c.fetchone():
+                flash('Username already exists! Please choose a different username.', 'danger')
+                return redirect(url_for('main.register'))
+
+            # Check if email already exists
+            c.execute('SELECT email FROM users WHERE email = ?', (email,))
+            if c.fetchone():
+                flash('Email already registered! Please use a different email.', 'danger')
+                return redirect(url_for('main.register'))
+
+            # Hash the password
+            hashed_password = generate_password_hash(password, method='pbkdf2:sha256')
+
+            # Insert new user
+            c.execute('''INSERT INTO users 
+                (first_name, last_name, dob, email, username, password, contact_number, street_address)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)''',
+                (first_name, last_name, dob, email, username, hashed_password, contact_number, street_address))
+            
+            # Commit the transaction
+            conn.commit()
+            flash('Registration successful! You can now log in.', 'success')
+            return redirect(url_for('dashboard'))
+
+        except sqlite3.IntegrityError as e:
+            flash('An error occurred during registration. Please try again.', 'danger')
+            print(f"Database error: {e}")  # For debugging
             return redirect(url_for('main.register'))
 
-        # Hash the password and save the new user
-        hashed_password = generate_password_hash(password, method='pbkdf2:sha256')
-        new_user = User(
-            first_name=first_name,
-            last_name=last_name,
-            dob=dob,
-            email=email,
-            username=username,
-            password=hashed_password,
-            contact_number=contact_number,
-            street_address=street_address
-        )
+        except Exception as e:
+            flash('An unexpected error occurred. Please try again.', 'danger')
+            print(f"Unexpected error: {e}")  # For debugging
+            return redirect(url_for('main.register'))
 
-        # Add the new user to the database
-        db.session.add(new_user)
-        db.session.commit()
+        finally:
+            # Always close the connection
+            conn.close()
 
-        flash('Registration successful! You can now log in.', 'success')
-        return redirect(url_for('main.login'))
-
+    # GET request - show registration form
     return render_template('register.html')
 
 # Route for the login page
