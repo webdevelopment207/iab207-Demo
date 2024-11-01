@@ -21,38 +21,45 @@ def init_db():
     conn.commit()
     conn.close()
 
-# Route for the registration page
-@app.route('/register', methods=['GET', 'POST'])
+# Registration template
+@main_bp.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
-        first_name = request.form.get('first_name')
-        last_name = request.form.get('last_name')
-        dob = request.form.get('dob')
-        email = request.form.get('email')
-        username = request.form.get('username')
-        password = request.form.get('password')
+        first_name = request.form['first_name']
+        last_name = request.form['last_name']
+        dob = request.form['dob']
+        email = request.form['email']
+        username = request.form['username']
+        password = request.form['password']
+        # Add new fields
+        contact_number = request.form['contact_number']
+        street_address = request.form['street_address']
 
-        # Validate that no field is missing
-        if not all([first_name, last_name, dob, email, username, password]):
-            flash('All fields are required!', 'danger')
-            return redirect(url_for('register'))
+        # Check if the username already exists
+        existing_user = User.query.filter_by(username=username).first()
+        if existing_user:
+            flash('Username already exists! Please choose a different username.', 'danger')
+            return redirect(url_for('main.register'))
 
-        # Hash the password
-        hashed_password = generate_password_hash(password)
+        # Hash the password and save the new user
+        hashed_password = generate_password_hash(password, method='pbkdf2:sha256')
+        new_user = User(
+            first_name=first_name,
+            last_name=last_name,
+            dob=dob,
+            email=email,
+            username=username,
+            password=hashed_password,
+            contact_number=contact_number,
+            street_address=street_address
+        )
 
-        # Store the user data in the database
-        conn = sqlite3.connect('users.db')
-        c = conn.cursor()
-        try:
-            c.execute('INSERT INTO users (first_name, last_name, dob, email, username, password) VALUES (?, ?, ?, ?, ?, ?)',
-                      (first_name, last_name, dob, email, username, hashed_password))
-            conn.commit()
-            flash('Registration successful!', 'success')
-            return redirect(url_for('login'))
-        except sqlite3.IntegrityError:
-            flash('Username or email already exists!', 'danger')
-        finally:
-            conn.close()
+        # Add the new user to the database
+        db.session.add(new_user)
+        db.session.commit()
+
+        flash('Registration successful! You can now log in.', 'success')
+        return redirect(url_for('main.login'))
 
     return render_template('register.html')
 

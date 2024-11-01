@@ -1,51 +1,121 @@
 {% extends "base.html" %}
-
 {% block title %}Register - realTickets{% endblock %}
-
 {% block content %}
-<div class="d-flex justify-content-center align-items-center vh-100">
-    <div class="card p-4 text-white bg-dark shadow-lg" style="max-width: 400px; width: 100%; border-radius: 10px;">
-        <h2 class="text-center mb-4">Create an Account</h2>
-        <form method="POST" action="{{ url_for('main.register') }}">
-            <div class="mb-3">
-                <label for="firstName" class="form-label">First Name <span class="text-danger">*</span></label>
-                <input type="text" class="form-control" id="firstName" name="first_name" required>
-            </div>
-            <div class="mb-3">
-                <label for="lastName" class="form-label">Last Name <span class="text-danger">*</span></label>
-                <input type="text" class="form-control" id="lastName" name="last_name" required>
-            </div>
-            <div class="mb-3">
-                <label for="dob" class="form-label">Date of Birth <span class="text-danger">*</span></label>
-                <input type="date" class="form-control" id="dob" name="dob" required>
-            </div>
-            <div class="mb-3">
-                <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
-                <input type="email" class="form-control" id="email" name="email" required>
-            </div>
-            <div class="mb-3">
-                <label for="username" class="form-label">Username <span class="text-danger">*</span></label>
-                <input type="text" class="form-control" id="username" name="username" required>
-            </div>
-            <div class="mb-3">
-                <label for="password" class="form-label">Password <span class="text-danger">*</span></label>
-                <input type="password" class="form-control" id="password" name="password" required
-                    onkeyup="checkPasswordStrength()">
-                <div id="passwordStrength" class="mt-2"></div>
-            </div>
-            <!-- Terms and Conditions Checkbox -->
-            <div class="form-check mb-3">
-                <input class="form-check-input" type="checkbox" id="termsConditions" onclick="toggleButton()" required>
-                <label class="form-check-label" for="termsConditions">
-                    I agree to the <strong>Terms and Conditions</strong> and confirm that I have read the
-                    <strong>Privacy Policy</strong>.
-                </label>
-            </div>
-            <button type="submit" class="btn btn-primary w-100">Register</button>
-            <p class="text-center mt-3">Already have an account? <a href="{{ url_for('main.login') }}"
-                    class="text-success">Log in</a></p>
-        </form>
 
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-8 col-lg-6">
+            <div class="card bg-dark text-white shadow-lg" style="border-radius: 15px;">
+                <div class="card-body p-4 p-md-5">
+                    <h2 class="text-center mb-4">Create an Account</h2>
+
+                    <form method="POST">
+                        <div class="row">
+                            <!-- Name Fields Side by Side -->
+                            <div class="col-md-6 mb-3">
+                                <label for="first_name" class="form-label">First Name <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="first_name" name="first_name" required>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="last_name" class="form-label">Last Name <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="last_name" name="last_name" required>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <!-- Contact Info Side by Side -->
+                            <div class="col-md-6 mb-3">
+                                <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
+                                <input type="email" class="form-control" id="email" name="email" required>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="contact_number" class="form-label">Contact Number <span class="text-danger">*</span></label>
+                                <input type="tel" class="form-control" id="contact_number" name="contact_number" 
+                                       pattern="[0-9]{10}" title="Please enter a valid 10-digit phone number" required>
+                                <small class="text-white-50">10 digits only</small>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="dob" class="form-label">Date of Birth <span class="text-danger">*</span></label>
+                            <input type="date" class="form-control" id="dob" name="dob" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="street_address" class="form-label">Street Address <span class="text-danger">*</span></label>
+                            <textarea class="form-control" id="street_address" name="street_address" rows="2" required></textarea>
+                        </div>
+
+                        <div class="row">
+                            <!-- Login Credentials Side by Side -->
+                            <div class="col-md-6 mb-3">
+                                <label for="username" class="form-label">Username <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="username" name="username" required>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="password" class="form-label">Password <span class="text-danger">*</span></label>
+                                <input type="password" class="form-control" id="password" name="password" required>
+                                <div id="passwordStrength" class="mt-2"></div>
+                            </div>
+                        </div>
+
+                        <div class="form-check mb-4">
+                            <input type="checkbox" class="form-check-input" id="terms" required>
+                            <label class="form-check-label small" for="terms">
+                                I agree to the <strong class="text-success">Terms and Conditions</strong> and confirm that I have read the <strong class="text-success">Privacy Policy</strong>.
+                            </label>
+                        </div>
+
+                        <button type="submit" class="btn btn-success w-100 py-2 mb-3">Create Account</button>
+
+                        <div class="text-center">
+                            <span class="small">Already have an account?</span>
+                            <a href="{{ url_for('main.login') }}" class="text-success text-decoration-none ms-1">Log in</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
+
+<style>
+    /* Custom styles */
+    .form-control {
+        background-color: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: white;
+    }
+
+    .form-control:focus {
+        background-color: rgba(255, 255, 255, 0.1);
+        border-color: #198754;
+        color: white;
+        box-shadow: 0 0 0 0.25rem rgba(25, 135, 84, 0.25);
+    }
+
+    .form-control::placeholder {
+        color: rgba(255, 255, 255, 0.5);
+    }
+
+    /* Style for date input */
+    input[type="date"]::-webkit-calendar-picker-indicator {
+        filter: invert(1);
+    }
+
+    /* Custom checkbox style */
+    .form-check-input:checked {
+        background-color: #198754;
+        border-color: #198754;
+    }
+
+    .form-check-input:focus {
+        border-color: #198754;
+        box-shadow: 0 0 0 0.25rem rgba(25, 135, 84, 0.25);
+    }
+</style>
+
 {% endblock %}

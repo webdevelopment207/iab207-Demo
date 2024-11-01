@@ -13,7 +13,9 @@ class User(UserMixin, db.Model):  # Inherit from UserMixin
     password = db.Column(db.String(200), nullable=False)  # For storing hashed passwords
     bio = db.Column(db.Text, nullable=True)  # Optional field for user bio
     created_at = db.Column(db.DateTime, default=datetime.utcnow)  # Track creation time
-
+    contact_number = db.Column(db.String(20), nullable=False)
+    street_address = db.Column(db.String(200), nullable=False)
+    
     def __repr__(self):
         return f'<User {self.username}>'
 
