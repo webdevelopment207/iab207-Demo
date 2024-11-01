@@ -4,16 +4,21 @@
 
 {% block content %}
 <style>
+    .booking-card-container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 20px;
+    }
+
     .booking-card {
         background-color: white;
         border-radius: 8px;
         box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        margin: 20px auto;
         padding: 20px;
-        max-width: 400px;
+        width: 300px;
         transition: box-shadow 0.3s;
         color: #333;
-        /* Text color for better contrast */
     }
 
     .booking-card:hover {
@@ -51,18 +56,22 @@
 
 <h2 class="text-center">My Booking History</h2>
 
-{% for booking in bookings %}
-<div class="booking-card">
-    <div class="booking-details">
-        <h5>{{ booking.event.name }}</h5>
-        <p><strong>Booking ID:</strong> {{ booking.id }}</p>
-        <p><strong>Date Booked:</strong> {{ booking.booking_date.strftime('%d %b %Y %I:%M %p') }}</p>
-        <p><strong>Number of Tickets:</strong> {{ booking.number_of_tickets }}</p>
+<div class="booking-card-container">
+    {% for booking in bookings %}
+    <div class="booking-card">
+        <div class="booking-details">
+            <h5>{{ booking.event.name }}</h5>
+            <p><strong>Booking ID:</strong> {{ booking.id }}</p>
+            <p><strong>Date Booked:</strong> {{ booking.booking_date.strftime('%d %b %Y %I:%M %p') }}</p>
+            <p><strong>Number of Tickets:</strong> {{ booking.number_of_tickets }}</p>
+            <p><strong>Order Total:</strong> ${{ booking.total_price }}</p> <!-- Display total price here -->
+        </div>
+        <a href="{{ url_for('main.event_details', event_id=booking.event_id) }}" class="check-details-btn">Check
+            Details</a>
     </div>
-    <a href="{{ url_for('main.event_details', event_id=booking.event_id) }}" class="check-details-btn">Check Details</a>
+    {% else %}
+    <p>No bookings found.</p>
+    {% endfor %}
 </div>
-{% else %}
-<p>No bookings found.</p>
-{% endfor %}
 
 {% endblock %}

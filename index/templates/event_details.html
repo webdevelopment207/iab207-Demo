@@ -6,57 +6,83 @@
 <style>
     .custom-box {
         background-color: #f8f9fa;
-        /* Light background */
         color: black;
         border: 1px solid #a6d1d1;
-        /* Border */
         border-radius: 0.60rem;
-        /* Rounded corners */
         padding: 1rem;
-        /* Padding */
         margin-bottom: 1rem;
-        /* Margin */
     }
 </style>
 <!-- Event Details Content -->
 <div class="container mt-4">
     <div class="row">
         <div class="col-md-8">
-            <h2 class="event-title">{{ event.name }}</h2> <!-- Dynamic Event Name -->
+            <h2 class="event-title">{{ event.name }}</h2>
+
+            <!-- Message for unavailable events -->
+            {% if event.status in ['Sold Out', 'Cancelled', 'Inactive'] %}
+            <div class="alert alert-danger" role="alert">
+                Sorry, this event is not available.
+            </div>
+            {% endif %}
 
             <!-- Description Section -->
             <div class="description custom-box">
                 <h6><strong>Description:</strong></h6>
-                <p>{{ event.description }}</p> <!-- Dynamic Event Description -->
+                <p>{{ event.description }}</p>
             </div>
 
             <!-- Event Details Section -->
             <div class="event-details custom-box">
-                <h6><strong>Time:</strong> {{ event.date.strftime('%I:%M %p') }}</h6> <!-- Dynamic Event Time -->
-                <h6><strong>Venue:</strong> {{ event.location }}</h6> <!-- Dynamic Venue -->
+                <h6><strong>Time:</strong> {{ event.date.strftime('%I:%M %p') }}</h6>
+                <h6><strong>Venue:</strong> {{ event.location }}</h6>
             </div>
 
             <!-- Tickets Available Section -->
             <div class="tickets-available custom-box">
                 <strong>No. of tickets available:</strong> <span class="badge bg-success">{{ event.seats_available
-                    }}</span> <!-- Dynamic Available Tickets -->
+                    }}</span>
             </div>
+
+            <!-- Status Update Section -->
+            {% if current_user.is_authenticated and event.created_by == current_user.id %}
+            <div class="status-update custom-box">
+                <h6><strong>Update Event Status:</strong></h6>
+                <form action="{{ url_for('main.update_event_status', event_id=event.id) }}" method="POST">
+                    <select name="status" class="form-select mb-2">
+                        <option value="Open" {% if event.status=='Open' %}selected{% endif %}>Open</option>
+                        <option value="Inactive" {% if event.status=='Inactive' %}selected{% endif %}>Inactive</option>
+                        <option value="Sold Out" {% if event.status=='Sold Out' %}selected{% endif %}>Sold Out</option>
+                        <option value="Cancelled" {% if event.status=='Cancelled' %}selected{% endif %}>Cancelled
+                        </option>
+                    </select>
+                    <button type="submit" class="btn btn-primary">Update Status</button>
+                </form>
+            </div>
+            {% endif %}
         </div>
-        <!-- Event Image Section -->
         <div class="col-md-4">
-            <img src="{{ url_for('static', filename='event_image.png') }}" class="img-fluid rounded mb-4"
-                alt="Event Image">
-            <!-- Dynamic Event Image -->
+            {% if event.image_filename %}
+            <img src="{{ url_for('static', filename='uploads/' ~ event.image_filename) }}"
+                class="img-fluid rounded mb-4" alt="Event Image">
+            {% else %}
+            <p>No image available for this event.</p>
+            {% endif %}
         </div>
-        <div class="ticket-price custom-box" style="max-width: 200px !important; max-height: 80px !important; margin-left: 13px !important;">
+        <div class="ticket-price custom-box"
+            style="max-width: 200px !important; max-height: 80px !important; margin-left: 13px !important;">
             <strong>Price per Ticket:</strong>
-            <span class="badge bg-info">AUD {{ event.price_per_ticket }}</span> <!-- Dynamic Ticket Price -->
+            <span class="badge bg-info">AUD {{ event.price_per_ticket }}</span>
         </div>
     </div>
 
-    <!-- Add this button before the comments section -->
+    <!-- "Book Tickets" Button -->
     <div class="text-start mb-4">
+        {% if event.status in ['Sold Out', 'Cancelled', 'Inactive'] %}
+        <button class="btn btn-secondary" disabled>Sold Out / Inactive / Cancelled</button>
+        {% else %}
         <a href="{{ url_for('main.tickets', event_id=event.id) }}" class="btn btn-success">Book Tickets</a>
+        {% endif %}
     </div>
 
     <!-- Comments Section -->

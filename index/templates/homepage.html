@@ -31,19 +31,30 @@
     </div>
 </div>
 
-<!-- Upcoming Games Section -->
 <div class="container mt-5">
     <h5>Upcoming Games</h5>
     <div class="row">
         <!-- Dynamic Game Cards -->
         {% if events %}
         {% for event in events %}
-        <div class="col-md-3 mb-4">
+        <div class="col-md-4 mb-4"> <!-- Changed from col-md-3 to col-md-4 for 3 cards per row -->
             <div class="game-card" style="background-color: #fff; padding: 20px; color: #333; border-radius: 10px;">
                 <h6>{{ event.name }}</h6>
                 <p>{{ event.date.strftime('%d %b %Y %I.%M%p') }} <br> {{ event.location }}</p>
-                <a href="{{ url_for('main.event_details', event_id=event.id) }}"
-                    class="badge bg-success game-status">Open</a>
+
+                <!-- Show status link, disabled if the event is sold out, inactive, or cancelled -->
+                {% if event.status in ['Sold Out', 'Inactive', 'Cancelled'] %}
+                <span class="badge bg-secondary game-status" style="pointer-events: none;">{{ event.status }}</span>
+                {% else %}
+                <a href="{{ url_for('main.event_details', event_id=event.id) }}" class="badge bg-success game-status">{{
+                    event.status }}</a>
+                {% endif %}
+
+                <!-- Show Event Details button -->
+                <div class="text-start mb-2" style="margin-top: 20px;">
+                    <a href="{{ url_for('main.event_details', event_id=event.id) }}" class="btn btn-success">Event
+                        Details</a>
+                </div>
             </div>
         </div>
         {% endfor %}

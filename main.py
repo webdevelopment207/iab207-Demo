@@ -1,6 +1,6 @@
 from flask import Flask
-from index.views import main_bp  
-from index import create_app  # Ensure this imports the create_app function from your __init__.py
+from index.views import main_bp  # Import the blueprint
+from index import create_app  # Import the create_app function from your __init__.py
 
 app = create_app()  # Create the Flask app using the create_app function
 

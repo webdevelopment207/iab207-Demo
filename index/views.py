@@ -15,6 +15,12 @@ def home():
     print(events)  # Debug line
     return render_template('homepage.html', events=events)
 
+# Define upload folder
+UPLOAD_FOLDER = os.path.join('static', 'uploads')  # Change this to your desired upload folder
+# Create the upload folder if it doesn't exist
+if not os.path.exists(UPLOAD_FOLDER):
+    os.makedirs(UPLOAD_FOLDER)
+
 # Registration route
 @main_bp.route('/register', methods=['GET', 'POST'])
 def register():
@@ -139,7 +145,7 @@ def create_event():
         if event_image:
             filename = event_image.filename
             # Save the image to the upload folder
-            image_path = os.path.join('path/to/upload/folder', filename)  # Update with your actual upload path
+            image_path = os.path.join(UPLOAD_FOLDER, filename)  # Use the UPLOAD_FOLDER variable
             event_image.save(image_path)
             # Save the image filename to the event object
             image_filename = filename
@@ -155,9 +161,11 @@ def create_event():
             seats_available=int(seats_available),
             status=status,
             price_per_ticket=price_per_ticket,  # Save the price to the database
-            image_filename=image_filename  # Add this line to save the image filename
+            image_filename=image_filename,  # Add this line to save the image filename
+            created_by=current_user.id 
         )
 
+        # Add the new event to the database
         db.session.add(new_event)
         db.session.commit()
         flash("Event created successfully!", "success")
@@ -192,7 +200,8 @@ def tickets(event_id):
 
     if request.method == 'POST':
         number_of_tickets = request.form.get('numberOfTickets', type=int)
-      # Check for existing ticket
+
+        # Check for existing ticket
         existing_ticket = Ticket.query.filter_by(
             event_id=event.id,
             user_name=request.form['name'],
@@ -215,7 +224,7 @@ def tickets(event_id):
         # Calculate the total price
         total_price = event.price_per_ticket * number_of_tickets
 
-        # If validation passes, create a ticket and reduce available seats
+        # Create a ticket and reduce available seats
         ticket = Ticket(
             event_id=event.id,
             user_name=request.form['name'],
@@ -227,12 +236,11 @@ def tickets(event_id):
         event.seats_available -= number_of_tickets  # Reduce the number of available seats
         db.session.commit()
 
-        # Only flash the success message once, after the ticket is saved
+        # Flash the success message and redirect after successful booking
         flash('Tickets booked successfully!', 'success')
         return redirect(url_for('main.tickets', event_id=event_id))
 
     return render_template('tickets.html', event=event)
-
 
 @main_bp.route('/booking-history')
 @login_required  # Ensure user is logged in to access booking history
@@ -279,3 +287,30 @@ def update_profile():
     db.session.commit()
     flash('Profile updated successfully!', 'success')
     return redirect(url_for('main.profile'))
+
+
+@main_bp.route('/event/<int:event_id>/update_status', methods=['POST'])
+@login_required
+def update_event_status(event_id):
+    # Retrieve the event by its ID
+    event = Event.query.get(event_id)
+    
+    # Check if the event exists
+    if event is None:
+        flash('Event not found', 'danger')
+        return redirect(url_for('main.home'))
+
+    # Check if the current user is the creator of the event
+    if event.created_by != current_user.id:
+        flash('You are not authorized to alter the status of this event.', 'danger')
+        return redirect(url_for('main.event_details', event_id=event_id))
+
+    # Get the new status from the form data
+    new_status = request.form.get('status')
+
+    # Update the event's status
+    event.status = new_status
+    db.session.commit()
+    
+    flash('Event status updated successfully!', 'success')
+    return redirect(url_for('main.event_details', event_id=event_id))

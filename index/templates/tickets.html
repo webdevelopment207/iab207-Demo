@@ -5,31 +5,21 @@
 {% block content %}
 <div class="container mt-4">
     <h2 class="mb-4">Book Tickets for {{ event.name }}</h2>
-
-    <!-- Flash Messages (Display only the first success message) -->
-    <div class="container mt-3">
-        {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-        <div style="z-index: 1050; position: relative;">
-            {% set displayed_success = false %}
-            {% for category, message in messages %}
-            {% if category == 'success' and not displayed_success %}
-            <div class="alert alert-success alert-dismissible fade show" role="alert">
-                {{ message }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-            {% set displayed_success = true %}
-            {% elif category != 'success' %}
-            <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
-                {{ message }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-            {% endif %}
-            {% endfor %}
+    <!-- Flash messages area inside the form -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <div class="form-flash-messages">
+        {% for category, message in messages %}
+        <div class="alert alert-{{ category }}">
+            {{ message }}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
         </div>
-        {% endif %}
-        {% endwith %}
+        {% endfor %}
     </div>
+    {% endif %}
+    {% endwith %}
 
     <div class="row">
         <div class="col-md-8">
@@ -110,7 +100,6 @@
         </div>
     </div>
 </div>
-
 <script>
     function calculateTotal() {
         const numberOfTickets = document.getElementById('numberOfTickets').value;
@@ -129,7 +118,7 @@
     if (isNaN(ticketCount) || ticketCount < 1 || ticketCount > 10) {
         alert("Please pick a valid number of tickets (1-10).");
         document.getElementById('totalPrice').value = ""; // Clear total price if invalid
-        return;
+        return; // Prevent further calculations if input is invalid
     }
 
     // Calculate total price
@@ -143,23 +132,31 @@
 
         if (isNaN(expiryDate.getTime())) {
             alert("Invalid expiration date format. Please use YYYY-MM-DD format.");
-            return false;
+            return false; // Prevent form submission
         }
 
         const currentDate = new Date();
         if (expiryDate < currentDate) {
             alert("The expiration date cannot be in the past. Please select a valid date.");
-            return false;
+            return false; // Prevent form submission
         }
 
         // Check if the payment confirmation checkbox is checked
         const paymentConfirmation = document.getElementById('paymentConfirmation');
         if (!paymentConfirmation.checked) {
             alert("You must acknowledge that your payment information may be stored before proceeding.");
-            return false;
+            return false; // Prevent form submission
         }
 
-        return true;
+        return true; // Allow form submission if all validations pass
     }
+
+    // Optionally, you might want to attach validateForm to the form submission event
+    document.querySelector('form').addEventListener('submit', function (event) {
+        if (!validateForm()) {
+            event.preventDefault(); // Prevent submission if validation fails
+        }
+    });
 </script>
+
 {% endblock %}
