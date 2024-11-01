@@ -119,35 +119,3 @@ Navigate to `http://localhost:5000` in your web browser.
 ```bash
 pip install -r requirements.txt
 ```
-
-### Database Migrations
-
-If you make changes to the models:
-```bash
-flask db migrate -m "Description of changes"
-flask db upgrade
-```
-
-## Contributing
-
-1. Fork the repository
-2. Create a new branch (```bash git checkout -b feature/improvement ```)
-3. Make your changes
-4. Commit your changes (```bash git commit -am 'Add new feature' ```)
-5. Push to the branch (```bash git push origin feature/improvement ```)
-6. Create a Pull Request
-
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## Acknowledgments
-
-- Flask documentation and community
-- Bootstrap team for the UI framework
-- QUT IAB207 teaching team
-
-## Contact
-
-Your Name - your.email@example.com
-Project Link: [https://github.com/yourusername/realtickets](https://github.com/yourusername/realtickets)
