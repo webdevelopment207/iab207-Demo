@@ -13,4 +13,4 @@ webdevelopment207 (14):
       update readme + merge dropdb -> createdb
       add the gitlog
       Update readme
-
+      add requirements.txt
