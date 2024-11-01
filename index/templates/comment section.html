@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block title %}Event Comments - RealTickets{% endblock %}
+
+{% block content %}
+<div class="container content">
+    <h2 class="text-center">Event Comments</h2>
+
+    <!-- Comments Section -->
+    <div class="container comments-section">
+        <h5>Comments</h5>
+        <!-- Example Comments -->
+        <div class="comment">
+            <div class="commenter-name">Jane Doe</div>
+            <div class="comment-date">October 15, 2024</div>
+            <p>Had an amazing time at the event! The atmosphere was electrifying.</p>
+        </div>
+
+        <div class="comment">
+            <div class="commenter-name">Mark Smith</div>
+            <div class="comment-date">October 16, 2024</div>
+            <p>Everything was well-organized, and it was so easy to find my seat!</p>
+        </div>
+
+        <!-- Comment Form -->
+        <textarea placeholder="Write your comment here..."></textarea>
+        <button type="submit">Submit Comment</button>
+    </div>
+</div>
+{% endblock %}

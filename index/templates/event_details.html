@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+
+{% block title %}Event Details{% endblock %}
+
+{% block content %}
+<style>
+    .custom-box {
+        background-color: #f8f9fa;
+        /* Light background */
+        color: black;
+        border: 1px solid #a6d1d1;
+        /* Border */
+        border-radius: 0.60rem;
+        /* Rounded corners */
+        padding: 1rem;
+        /* Padding */
+        margin-bottom: 1rem;
+        /* Margin */
+    }
+</style>
+<!-- Event Details Content -->
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8">
+            <h2 class="event-title">{{ event.name }}</h2> <!-- Dynamic Event Name -->
+
+            <!-- Description Section -->
+            <div class="description custom-box">
+                <h6><strong>Description:</strong></h6>
+                <p>{{ event.description }}</p> <!-- Dynamic Event Description -->
+            </div>
+
+            <!-- Event Details Section -->
+            <div class="event-details custom-box">
+                <h6><strong>Time:</strong> {{ event.date.strftime('%I:%M %p') }}</h6> <!-- Dynamic Event Time -->
+                <h6><strong>Venue:</strong> {{ event.location }}</h6> <!-- Dynamic Venue -->
+            </div>
+
+            <!-- Tickets Available Section -->
+            <div class="tickets-available custom-box">
+                <strong>No. of tickets available:</strong> <span class="badge bg-success">{{ event.seats_available
+                    }}</span> <!-- Dynamic Available Tickets -->
+            </div>
+        </div>
+        <!-- Event Image Section -->
+        <div class="col-md-4">
+            <img src="{{ url_for('static', filename='event_image.png') }}" class="img-fluid rounded mb-4"
+                alt="Event Image">
+            <!-- Dynamic Event Image -->
+        </div>
+        <div class="ticket-price custom-box" style="max-width: 200px !important; max-height: 80px !important; margin-left: 13px !important;">
+            <strong>Price per Ticket:</strong>
+            <span class="badge bg-info">AUD {{ event.price_per_ticket }}</span> <!-- Dynamic Ticket Price -->
+        </div>
+    </div>
+
+    <!-- Add this button before the comments section -->
+    <div class="text-start mb-4">
+        <a href="{{ url_for('main.tickets', event_id=event.id) }}" class="btn btn-success">Book Tickets</a>
+    </div>
+
+    <!-- Comments Section -->
+    <h4 class="mt-4">Comments</h4>
+    <div class="comments-section mb-4">
+        {% for comment in event.comments %}
+        <div class="comment custom-box">
+            <p><strong>{{ comment.user.username }}</strong> on {{ comment.date_posted.strftime('%Y-%m-%d %H:%M:%S') }}
+            </p>
+            <p>{{ comment.content }}</p>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Comments Form -->
+    {% if current_user.is_authenticated %}
+    <form action="{{ url_for('main.post_comment', event_id=event.id) }}" method="POST" class="mb-4">
+        <div class="mb-3">
+            <label for="content" class="form-label">Your Comment</label>
+            <textarea class="form-control" id="content" name="content" rows="3" required></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Post Comment</button>
+    </form>
+    {% else %}
+    <p><a href="{{ url_for('main.login') }}">Log in</a> to post a comment.</p>
+    {% endif %}
+</div>
+
+{% endblock %}

@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block title %}Profile{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2 class="mb-4">User Profile</h2>
+    <form method="POST" action="{{ url_for('main.profile') }}">
+        <div class="mb-3">
+            <label for="username" class="form-label">Username</label>
+            <input type="text" class="form-control" id="username" name="username" value="{{ current_user.username }}"
+                required>
+        </div>
+
+        <div class="mb-3">
+            <label for="email" class="form-label">Email</label>
+            <input type="email" class="form-control" id="email" name="email" value="{{ current_user.email }}" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="bio" class="form-label">Bio</label>
+            <textarea class="form-control" id="bio" name="bio" rows="3">{{ current_user.bio }}</textarea>
+        </div>
+
+        <div class="mb-3">
+            <label for="profile_picture" class="form-label">Profile Picture</label>
+            <input type="file" class="form-control" id="profile_picture" name="profile_picture">
+            <small class="form-text text-muted" style="color: white !important;">Upload a profile picture (optional).</small>
+        </div>
+        <button type="submit" class="btn btn-primary">Update Profile</button>
+
+    </div>
+        {% endblock %}

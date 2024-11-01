@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+
+{% block title %}User Booking History - RealTickets{% endblock %}
+
+{% block content %}
+<style>
+    .booking-card {
+        background-color: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        margin: 20px auto;
+        padding: 20px;
+        max-width: 400px;
+        transition: box-shadow 0.3s;
+        color: #333;
+        /* Text color for better contrast */
+    }
+
+    .booking-card:hover {
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .booking-details h5 {
+        margin-top: 0;
+        margin-bottom: 10px;
+    }
+
+    .booking-details p {
+        margin: 5px 0;
+    }
+
+    .check-details-btn {
+        display: inline-block;
+        padding: 10px 15px;
+        background-color: #007BFF;
+        color: white;
+        text-decoration: none;
+        border-radius: 5px;
+        transition: background-color 0.3s;
+        margin-top: 10px;
+    }
+
+    .check-details-btn:hover {
+        background-color: #0056b3;
+    }
+
+    .text-center {
+        text-align: center;
+    }
+</style>
+
+<h2 class="text-center">My Booking History</h2>
+
+{% for booking in bookings %}
+<div class="booking-card">
+    <div class="booking-details">
+        <h5>{{ booking.event.name }}</h5>
+        <p><strong>Booking ID:</strong> {{ booking.id }}</p>
+        <p><strong>Date Booked:</strong> {{ booking.booking_date.strftime('%d %b %Y %I:%M %p') }}</p>
+        <p><strong>Number of Tickets:</strong> {{ booking.number_of_tickets }}</p>
+    </div>
+    <a href="{{ url_for('main.event_details', event_id=booking.event_id) }}" class="check-details-btn">Check Details</a>
+</div>
+{% else %}
+<p>No bookings found.</p>
+{% endfor %}
+
+{% endblock %}

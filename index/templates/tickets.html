@@ -1,0 +1,165 @@
+{% extends "base.html" %}
+
+{% block title %}Book Tickets{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">Book Tickets for {{ event.name }}</h2>
+
+    <!-- Flash Messages (Display only the first success message) -->
+    <div class="container mt-3">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <div style="z-index: 1050; position: relative;">
+            {% set displayed_success = false %}
+            {% for category, message in messages %}
+            {% if category == 'success' and not displayed_success %}
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            {% set displayed_success = true %}
+            {% elif category != 'success' %}
+            <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            {% endif %}
+            {% endfor %}
+        </div>
+        {% endif %}
+        {% endwith %}
+    </div>
+
+    <div class="row">
+        <div class="col-md-8">
+            <form id="ticketForm" action="{{ url_for('main.tickets', event_id=event.id) }}" method="POST"
+                onsubmit="return validateForm()">
+                <!-- Select Number of Tickets -->
+                <div class="mb-3">
+                    <label for="numberOfTickets" class="form-label">Number of Tickets</label>
+                    <input type="number" class="form-control" id="numberOfTickets" name="numberOfTickets" min="1"
+                        max="10" required oninput="calculateTotal()">
+                    <small class="form-text text-muted" style="color: white !important;">*Maximum of 10 tickets per
+                        booking.</small>
+                </div>
+
+                <!-- Select Seat Preferences -->
+                <div class="mb-3">
+                    <label for="seatPreference" class="form-label">Seat Preference</label>
+                    <select class="form-select" id="seatPreference" name="seatPreference" required>
+                        <option value="any">Any</option>
+                        <option value="aisle">Aisle</option>
+                        <option value="middle">Middle</option>
+                        <option value="window">Window</option>
+                    </select>
+                </div>
+
+                <!-- User Information -->
+                <h5>Contact Information</h5>
+                <div class="mb-3">
+                    <label for="name" class="form-label">Name</label>
+                    <input type="text" class="form-control" id="name" name="name" required>
+                </div>
+                <div class="mb-3">
+                    <label for="email" class="form-label">Email</label>
+                    <input type="email" class="form-control" id="email" name="email" required>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" class="btn btn-primary mt-4">Book Tickets</button>
+            </form>
+        </div>
+
+        <!-- Payment Information on the right side -->
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Payment Information</h5>
+                </div>
+                <div class="card-body">
+                    <!-- Total Price Display in Payment Form -->
+                    <div class="mb-3">
+                        <label for="totalPrice" class="form-label">Total Price</label>
+                        <input type="text" class="form-control" id="totalPrice" name="totalPrice" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label for="cardNumber" class="form-label">Credit Card Number</label>
+                        <input type="text" class="form-control" id="cardNumber" name="cardNumber" pattern="\d{16}"
+                            required placeholder="16-digit card number">
+                    </div>
+                    <div class="mb-3">
+                        <label for="expiryDate" class="form-label">Expiration Date</label>
+                        <input type="month" class="form-control" id="expiryDate" name="expiryDate" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="cvv" class="form-label">CVV</label>
+                        <input type="text" class="form-control" id="cvv" name="cvv" pattern="\d{3}" required
+                            placeholder="3-digit CVV">
+                    </div>
+
+                    <!-- Confirmation Checkbox -->
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="paymentConfirmation" required>
+                        <label class="form-check-label" for="paymentConfirmation">I acknowledge that by submitting this
+                            payment, my payment information may be securely stored and utilized for transaction
+                            purposes.</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function calculateTotal() {
+        const numberOfTickets = document.getElementById('numberOfTickets').value;
+        const pricePerTicket = parseFloat({{ event.price_per_ticket | tojson }}); // Ensure it's a number
+
+    // Allow for empty input without showing an alert
+    if (numberOfTickets === "") {
+        document.getElementById('totalPrice').value = ""; // Clear total price if input is empty
+        return;
+    }
+
+    // Convert to a number
+    const ticketCount = parseInt(numberOfTickets, 10);
+
+    // Check if the input is valid and within range
+    if (isNaN(ticketCount) || ticketCount < 1 || ticketCount > 10) {
+        alert("Please pick a valid number of tickets (1-10).");
+        document.getElementById('totalPrice').value = ""; // Clear total price if invalid
+        return;
+    }
+
+    // Calculate total price
+    const totalPrice = (ticketCount * pricePerTicket).toFixed(2);
+    document.getElementById('totalPrice').value = `$${totalPrice}`;
+    }
+
+    function validateForm() {
+        const expiryDateInput = document.getElementById('expiryDate');
+        const expiryDate = new Date(expiryDateInput.value);
+
+        if (isNaN(expiryDate.getTime())) {
+            alert("Invalid expiration date format. Please use YYYY-MM-DD format.");
+            return false;
+        }
+
+        const currentDate = new Date();
+        if (expiryDate < currentDate) {
+            alert("The expiration date cannot be in the past. Please select a valid date.");
+            return false;
+        }
+
+        // Check if the payment confirmation checkbox is checked
+        const paymentConfirmation = document.getElementById('paymentConfirmation');
+        if (!paymentConfirmation.checked) {
+            alert("You must acknowledge that your payment information may be stored before proceeding.");
+            return false;
+        }
+
+        return true;
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+
+{% block title %}Create Event - RealTickets{% endblock %}
+
+{% block content %}
+<style>
+    .btn-custom {
+        background-color: #8b8b8b;
+        color: #000000;
+        padding: 10px 20px;
+        margin-top: 30px;
+        border: none;
+        border-radius: 5px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    .btn-custom:hover {
+        background-color: #72c2e4f5;
+    }
+</style>
+
+<div class="container form-container">
+    <h2 class="text-center">Create New Event</h2>
+
+    <form action="{{ url_for('main.create_event') }}" method="POST" enctype="multipart/form-data">
+        <!-- Team Names -->
+        <div class="row form-section">
+            <div class="col-md-6">
+                <label for="homeTeam" class="form-label">Home Team</label>
+                <input type="text" class="form-control" id="homeTeam" name="homeTeam" placeholder="Enter home team"
+                    required>
+            </div>
+            <div class="col-md-6">
+                <label for="awayTeam" class="form-label">Away Team</label>
+                <input type="text" class="form-control" id="awayTeam" name="awayTeam" placeholder="Enter away team"
+                    required>
+            </div>
+        </div>
+
+        <!-- Venue -->
+        <div class="form-section">
+            <label for="venue" class="form-label">Venue</label>
+            <input type="text" class="form-control" id="venue" name="venue" placeholder="Enter venue" required>
+        </div>
+
+        <!-- Date & Time -->
+        <div class="row form-section">
+            <div class="col-md-6">
+                <label for="eventDate" class="form-label">Date</label>
+                <input type="date" class="form-control" id="eventDate" name="eventDate" required>
+            </div>
+            <div class="col-md-6">
+                <label for="eventTime" class="form-label">Time</label>
+                <input type="time" class="form-control" id="eventTime" name="eventTime" required>
+            </div>
+        </div>
+
+        <!-- Event Description -->
+        <div class="form-section">
+            <label for="eventDescription" class="form-label">Event Description</label>
+            <textarea class="form-control" id="eventDescription" name="eventDescription" rows="3"
+                placeholder="Provide a brief description of the event" required></textarea>
+        </div>
+
+        <!-- Image Upload -->
+        <div class="form-section">
+            <label for="eventImage" class="form-label">Event Image</label>
+            <input type="file" class="form-control" id="eventImage" name="eventImage" accept="image/*">
+        </div>
+
+        <!-- Number of Seats Available -->
+        <div class="form-section">
+            <label for="seatsAvailable" class="form-label">Number of Seats Available</label>
+            <input type="number" class="form-control" id="seatsAvailable" name="seatsAvailable"
+                placeholder="Enter number of available seats" required>
+        </div>
+
+        <!-- Price per Ticket -->
+        <div class="form-section">
+            <label for="price_per_ticket" class="form-label">Price per Ticket (AUD)</label>
+            <input type="number" step="0.01" class="form-control" id="price_per_ticket" name="price_per_ticket"
+                placeholder="Enter price per ticket" required>
+        </div>
+
+        <!-- Event Status -->
+        <div class="form-section">
+            <label for="status" class="form-label">Event Status</label>
+            <select class="form-select" id="status" name="status" required>
+                <option value="Open">Open</option>
+                <option value="Inactive">Inactive</option>
+                <option value="Sold Out">Sold Out</option>
+                <option value="Cancelled">Cancelled</option>
+            </select>
+        </div>
+
+        <!-- Submit Button -->
+        <div class="text-center form-section">
+            <button type="submit" class="btn btn-custom">Post Event</button>
+        </div>
+    </form>
+</div>
+{% endblock %}
